@@ -20,7 +20,13 @@ export const AREAS = [
   { id: "garia", label: "Garia" },
   { id: "jadavpur", label: "Jadavpur" },
   { id: "em-bypass", label: "EM Bypass" },
-  { id: "other", label: "Other Kolkata Areas" }
+  { id: "siliguri", label: "Siliguri" },
+  { id: "durgapur", label: "Durgapur" },
+  { id: "kharagpur", label: "Kharagpur / IIT" },
+  { id: "darjeeling", label: "Darjeeling" },
+  { id: "jalpaiguri", label: "Jalpaiguri" },
+  { id: "hooghly", label: "Hooghly" },
+  { id: "other", label: "Other WB Areas" }
 ];
 
 export const STAGES = [

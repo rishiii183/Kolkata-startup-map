@@ -1,8 +1,9 @@
 import React from 'react';
-import { ExternalLink, MapPin, Building2, Globe, ArrowRight } from 'lucide-react';
+import { ExternalLink, MapPin, Building2, ArrowRight } from 'lucide-react';
 import { SECTOR_COLOR_MAP, AREAS, STAGES, SECTORS } from '../constants/options';
+import { getLogoUrl } from '../utils/logoHelper';
 
-export default function GridView({ startups, onSelectStartup }) {
+export default function GridView({ startups, onSelectStartup, onOpenDetail }) {
   if (!startups || startups.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-12 text-center border border-slate-200 shadow-xs max-w-xl mx-auto my-12">
@@ -24,6 +25,7 @@ export default function GridView({ startups, onSelectStartup }) {
         const areaObj = AREAS.find(a => a.id === startup.area);
         const stageObj = STAGES.find(s => s.id === startup.stage);
         const sectorColor = SECTOR_COLOR_MAP[startup.sector] || SECTOR_COLOR_MAP.other;
+        const logo = getLogoUrl(startup);
 
         return (
           <div
@@ -31,21 +33,39 @@ export default function GridView({ startups, onSelectStartup }) {
             className="group bg-white rounded-2xl p-5 border border-slate-200/90 hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between"
           >
             <div>
-              {/* Header with Circle initial & Title */}
+              {/* Header with Circle Logo & Title */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex items-start space-x-3">
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shrink-0 shadow-xs group-hover:scale-105 transition-transform overflow-hidden"
-                    style={{ backgroundColor: sectorColor.hex }}
+                    onClick={() => onOpenDetail && onOpenDetail(startup)}
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shrink-0 shadow-xs group-hover:scale-105 transition-transform overflow-hidden bg-white border border-slate-200 p-1 cursor-pointer"
                   >
-                    {startup.logoUrl && startup.logoUrl.trim() !== '' ? (
-                      <img src={startup.logoUrl} alt={startup.name} className="w-full h-full object-contain p-1 bg-white rounded-xl" />
-                    ) : (
-                      startup.colorSeed || startup.name.charAt(0)
-                    )}
+                    {logo ? (
+                      <img
+                        src={logo}
+                        alt={startup.name}
+                        className="w-full h-full object-contain rounded-lg"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className="w-full h-full items-center justify-center text-white font-bold text-lg rounded-lg"
+                      style={{
+                        backgroundColor: sectorColor.hex,
+                        display: logo ? 'none' : 'flex'
+                      }}
+                    >
+                      {startup.colorSeed || startup.name.charAt(0)}
+                    </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-base group-hover:text-blue-600 transition-colors line-clamp-1">
+                    <h3
+                      onClick={() => onOpenDetail && onOpenDetail(startup)}
+                      className="font-bold text-slate-900 text-base group-hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer"
+                    >
                       {startup.name}
                     </h3>
                     <div className="flex items-center space-x-1 text-xs text-slate-500 font-medium">
@@ -78,11 +98,11 @@ export default function GridView({ startups, onSelectStartup }) {
             {/* Bottom Actions */}
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
               <button
-                onClick={() => onSelectStartup && onSelectStartup(startup)}
-                className="inline-flex items-center space-x-1 text-xs font-semibold text-slate-600 hover:text-blue-600 transition cursor-pointer"
+                type="button"
+                onClick={() => onOpenDetail && onOpenDetail(startup)}
+                className="inline-flex items-center space-x-1 text-xs font-bold text-blue-600 hover:text-blue-700 transition cursor-pointer"
               >
-                <span>Focus on Map</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>View details →</span>
               </button>
 
               {startup.website && (
