@@ -19,16 +19,27 @@
 }
 
 /* Leaflet map custom markers & popups */
-.custom-leaflet-marker {
+.custom-leaflet-marker, .custom-cluster-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease-in-out;
+  background: transparent !important;
+  border: none !important;
 }
 
-.custom-leaflet-marker:hover {
+.custom-leaflet-marker:hover, .custom-cluster-icon:hover {
   transform: scale(1.15);
   z-index: 9999 !important;
+}
+
+/* MarkerCluster default overrides */
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+  background-color: transparent !important;
+}
+.marker-cluster div {
+  background-color: transparent !important;
+  margin: 0 !important;
 }
 
 .leaflet-popup-content-wrapper {

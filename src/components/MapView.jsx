@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import { ExternalLink, MapPin, Building2, Tag, Layers } from 'lucide-react';
 import { SECTOR_COLOR_MAP, AREAS, STAGES, SECTORS } from '../constants/options';
@@ -13,7 +14,6 @@ function MapRecenter({ startups }) {
   const map = useMap();
   useEffect(() => {
     if (startups && startups.length > 0) {
-      // Calculate bounds if entries exist
       const bounds = L.latLngBounds(startups.map(s => [s.lat, s.lng]));
       if (bounds.isValid()) {
         map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
@@ -26,14 +26,77 @@ function MapRecenter({ startups }) {
   return null;
 }
 
-// Function to create custom DivIcon per startup marker
+// Function to create cluster bubble icon scaled by count
+function createClusterCustomIcon(cluster) {
+  const count = cluster.getChildCount();
+  let bgColor = '#86efac'; // Green for small clusters (2-5 entries)
+  let textColor = '#14532d';
+
+  if (count >= 6 && count < 50) {
+    bgColor = '#facc15'; // Yellow/gold for medium clusters (6-50 entries)
+    textColor = '#713f12';
+  } else if (count >= 50) {
+    bgColor = '#fb923c'; // Orange for large clusters (50+ entries)
+    textColor = '#431407';
+  }
+
+  const html = `
+    <div class="custom-cluster-icon" style="width: 36px; height: 36px;">
+      <div style="
+        background-color: ${bgColor};
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: ${textColor};
+        font-weight: 800;
+        font-size: 13px;
+        letter-spacing: -0.5px;
+      ">
+        ${count}
+      </div>
+    </div>
+  `;
+
+  return L.divIcon({
+    html,
+    className: 'custom-cluster-wrapper',
+    iconSize: [36, 36],
+    iconAnchor: [18, 18]
+  });
+}
+
+// Function to create custom DivIcon per individual startup marker
 function createCustomMarkerIcon(startup) {
   const sectorInfo = SECTOR_COLOR_MAP[startup.sector] || SECTOR_COLOR_MAP.other;
   const hexColor = sectorInfo.hex;
   const letter = startup.colorSeed || startup.name.charAt(0).toUpperCase();
 
-  const html = `
-    <div class="custom-leaflet-marker" style="width: 36px; height: 36px;">
+  let innerContent;
+  if (startup.logoUrl && startup.logoUrl.trim() !== '') {
+    innerContent = `
+      <div style="
+        background-color: #ffffff;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 3px;
+      ">
+        <img src="${startup.logoUrl}" alt="${startup.name}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" />
+      </div>
+    `;
+  } else {
+    innerContent = `
       <div style="
         background-color: ${hexColor};
         width: 34px;
@@ -51,6 +114,12 @@ function createCustomMarkerIcon(startup) {
       ">
         ${letter}
       </div>
+    `;
+  }
+
+  const html = `
+    <div class="custom-leaflet-marker" style="width: 36px; height: 36px;">
+      ${innerContent}
     </div>
   `;
 
@@ -72,7 +141,7 @@ export default function MapView({ startups, onSelectStartup }) {
         scrollWheelZoom={true}
         className="w-full h-full"
       >
-        {/* Free anonymous CARTO Voyager tiles — No API key needed */}
+        {/* Free anonymous CARTO Voyager tiles */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -81,80 +150,92 @@ export default function MapView({ startups, onSelectStartup }) {
 
         <MapRecenter startups={startups} />
 
-        {startups.map((startup) => {
-          const sectorObj = SECTORS.find(s => s.id === startup.sector);
-          const areaObj = AREAS.find(a => a.id === startup.area);
-          const stageObj = STAGES.find(s => s.id === startup.stage);
-          const sectorColor = SECTOR_COLOR_MAP[startup.sector] || SECTOR_COLOR_MAP.other;
+        {/* Marker Clustering Group */}
+        <MarkerClusterGroup
+          iconCreateFunction={createClusterCustomIcon}
+          showCoverageOnHover={false}
+          maxClusterRadius={45}
+          spiderfyOnMaxZoom={true}
+        >
+          {startups.map((startup) => {
+            const sectorObj = SECTORS.find(s => s.id === startup.sector);
+            const areaObj = AREAS.find(a => a.id === startup.area);
+            const stageObj = STAGES.find(s => s.id === startup.stage);
+            const sectorColor = SECTOR_COLOR_MAP[startup.sector] || SECTOR_COLOR_MAP.other;
 
-          return (
-            <Marker
-              key={startup.id}
-              position={[startup.lat, startup.lng]}
-              icon={createCustomMarkerIcon(startup)}
-              eventHandlers={{
-                click: () => onSelectStartup && onSelectStartup(startup)
-              }}
-            >
-              <Popup>
-                <div className="p-4 max-w-[280px] bg-white">
-                  
-                  {/* Title & Avatar */}
-                  <div className="flex items-start space-x-3 mb-2.5">
-                    <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shrink-0 shadow-xs"
-                      style={{ backgroundColor: sectorColor.hex }}
-                    >
-                      {startup.colorSeed || startup.name.charAt(0)}
+            return (
+              <Marker
+                key={startup.id}
+                position={[startup.lat, startup.lng]}
+                icon={createCustomMarkerIcon(startup)}
+                eventHandlers={{
+                  click: () => onSelectStartup && onSelectStartup(startup)
+                }}
+              >
+                <Popup>
+                  <div className="p-4 max-w-[280px] bg-white">
+                    
+                    {/* Title & Avatar */}
+                    <div className="flex items-start space-x-3 mb-2.5">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shrink-0 shadow-xs overflow-hidden"
+                        style={{ backgroundColor: sectorColor.hex }}
+                      >
+                        {startup.logoUrl && startup.logoUrl.trim() !== '' ? (
+                          <img src={startup.logoUrl} alt={startup.name} className="w-full h-full object-contain p-1 bg-white rounded-xl" />
+                        ) : (
+                          startup.colorSeed || startup.name.charAt(0)
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-900 text-sm leading-tight">
+                          {startup.name}
+                        </h3>
+                        <span className="text-[11px] font-semibold text-slate-500 capitalize">
+                          {startup.type === 'vc' ? 'VC / Investor' : startup.type === 'ecosystem' ? 'Ecosystem Hub' : 'Startup'}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm leading-tight">
-                        {startup.name}
-                      </h3>
-                      <span className="text-[11px] font-semibold text-slate-500 capitalize">
-                        {startup.type === 'vc' ? 'VC / Investor' : startup.type === 'ecosystem' ? 'Ecosystem Hub' : 'Startup'}
+
+                    {/* Badges */}
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${sectorColor.badgeBg}`}>
+                        {sectorObj?.label || startup.sector}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                        {stageObj?.label || startup.stage}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-600 border border-slate-200">
+                        {areaObj?.label || startup.area}
                       </span>
                     </div>
+
+                    {/* Description */}
+                    {startup.description && (
+                      <p className="text-xs text-slate-600 mb-3.5 line-clamp-2 leading-relaxed">
+                        {startup.description}
+                      </p>
+                    )}
+
+                    {/* Website link */}
+                    {startup.website && (
+                      <a
+                        href={startup.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center w-full space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition"
+                      >
+                        <span>Visit Website</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+
                   </div>
-
-                  {/* Badges */}
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${sectorColor.badgeBg}`}>
-                      {sectorObj?.label || startup.sector}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                      {stageObj?.label || startup.stage}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-50 text-slate-600 border border-slate-200">
-                      {areaObj?.label || startup.area}
-                    </span>
-                  </div>
-
-                  {/* Description */}
-                  {startup.description && (
-                    <p className="text-xs text-slate-600 mb-3.5 line-clamp-2 leading-relaxed">
-                      {startup.description}
-                    </p>
-                  )}
-
-                  {/* Website link */}
-                  {startup.website && (
-                    <a
-                      href={startup.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center w-full space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition"
-                    >
-                      <span>Visit Website</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MarkerClusterGroup>
       </MapContainer>
     </div>
   );
