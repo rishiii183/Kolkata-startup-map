@@ -47,36 +47,50 @@ function MapRecenter({ startups }) {
   return null;
 }
 
-// Function to create cluster bubble icon scaled by count
+// Function to create cluster bubble icon scaled by count matching reference design
 function createClusterCustomIcon(cluster) {
   const count = cluster.getChildCount();
-  let bgColor = '#3b82f6'; // Primary Blue theme
-  let textColor = '#ffffff';
+  
+  let bgStyle = 'rgba(74, 222, 128, 0.92)'; // Soft Vibrant Green for 2-9
+  let textColor = '#064e3b';
+  let shadow = '0 4px 12px rgba(74, 222, 128, 0.4)';
+  let size = 38;
 
   if (count >= 10 && count < 50) {
-    bgColor = '#2563eb';
+    bgStyle = 'rgba(250, 204, 21, 0.94)'; // Soft Gold/Yellow for 10-49
+    textColor = '#713f12';
+    shadow = '0 4px 12px rgba(234, 179, 8, 0.45)';
+    size = 42;
+  } else if (count >= 50 && count < 200) {
+    bgStyle = 'rgba(251, 146, 60, 0.95)'; // Soft Vibrant Orange for 50-199
     textColor = '#ffffff';
-  } else if (count >= 50) {
-    bgColor = '#1d4ed8';
+    shadow = '0 4px 14px rgba(249, 115, 22, 0.5)';
+    size = 46;
+  } else if (count >= 200) {
+    bgStyle = 'rgba(239, 68, 68, 0.95)'; // Red for 200+ major hubs
     textColor = '#ffffff';
+    shadow = '0 4px 16px rgba(220, 38, 38, 0.55)';
+    size = 50;
   }
 
   const html = `
     <div style="
-      background-color: ${bgColor};
-      width: 42px;
-      height: 42px;
+      background: ${bgStyle};
+      width: ${size}px;
+      height: ${size}px;
       border-radius: 50%;
-      border: 3px solid #ffffff;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      border: 2.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow: ${shadow};
       display: flex;
       align-items: center;
       justify-content: center;
       color: ${textColor};
       font-weight: 800;
-      font-size: 14px;
+      font-size: ${size > 42 ? 14 : 13}px;
       letter-spacing: -0.5px;
       cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.25s ease-out;
     ">
       ${count}
     </div>
@@ -85,8 +99,8 @@ function createClusterCustomIcon(cluster) {
   return L.divIcon({
     html,
     className: 'custom-cluster-marker',
-    iconSize: [42, 42],
-    iconAnchor: [21, 21]
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
   });
 }
 
@@ -113,6 +127,7 @@ function createCustomMarkerIcon(startup) {
         overflow: hidden;
         padding: 3px;
         cursor: pointer;
+        transition: transform 0.2s ease;
       ">
         <img
           src="${logo}"
@@ -140,6 +155,7 @@ function createCustomMarkerIcon(startup) {
         font-size: 13px;
         letter-spacing: -0.5px;
         cursor: pointer;
+        transition: transform 0.2s ease;
       ">
         ${letter}
       </div>
@@ -179,13 +195,17 @@ export default function MapView({ startups, onSelectStartup, onOpenDetail }) {
 
         <MapRecenter startups={startups} />
 
-        {/* Leaflet Marker Clustering Group */}
+        {/* Smooth Leaflet Marker Clustering Group */}
         <MarkerClusterGroup
           key={startups ? startups.length : 'all'}
           iconCreateFunction={createClusterCustomIcon}
           showCoverageOnHover={false}
           maxClusterRadius={50}
           spiderfyOnMaxZoom={true}
+          disableClusteringAtZoom={15}
+          animate={true}
+          animateAddingMarkers={true}
+          zoomToBoundsOnClick={true}
         >
           {startups && startups.map((startup) => {
             const sectorObj = SECTORS.find(s => s.id === startup.sector);
