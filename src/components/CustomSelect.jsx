@@ -41,16 +41,16 @@ export default function CustomSelect({
   return (
     <div className="relative w-full sm:w-auto" ref={containerRef}>
       
-      {/* Pill Trigger Button */}
+      {/* Pill Trigger Button in Blue Theme */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full sm:w-auto flex items-center justify-between gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 cursor-pointer whitespace-nowrap ${
           isFiltered
-            ? 'bg-slate-900 border-slate-900 text-white font-semibold shadow-xs'
+            ? 'bg-blue-600 border-blue-600 text-white font-semibold shadow-xs'
             : isOpen
-            ? 'bg-white border-slate-400 text-slate-900 ring-2 ring-slate-900/10'
-            : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50'
+            ? 'bg-white border-blue-500 text-slate-900 ring-2 ring-blue-500/20'
+            : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-blue-50/50'
         }`}
       >
         <div className="flex items-center gap-1.5 min-w-0 truncate">
@@ -84,8 +84,8 @@ export default function CustomSelect({
                 }}
                 className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-medium transition cursor-pointer ${
                   isSelected
-                    ? 'bg-slate-900 text-white font-semibold'
-                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-blue-600 text-white font-semibold'
+                    : 'text-slate-700 hover:bg-blue-50 hover:text-blue-700'
                 }`}
               >
                 <span className="truncate">{option.label}</span>

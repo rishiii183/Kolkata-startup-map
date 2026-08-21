@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Search, X, Zap, ExternalLink } from 'lucide-react';
+import { MapPin, Search, X, Zap } from 'lucide-react';
 import { TYPES, AREAS, STAGES, SECTORS, GOOGLE_FORM_URL } from '../constants/options';
 import CustomSelect from './CustomSelect';
 
@@ -17,13 +17,13 @@ export default function Navbar({
 
   return (
     <nav className="w-full max-w-7xl mx-auto px-2 sm:px-4 pt-3 pb-1">
-      {/* Floating Header Card matching reference screenshot */}
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full border border-slate-200/90 shadow-lg px-3 py-2 flex flex-wrap lg:flex-nowrap items-center justify-between gap-2.5">
+      {/* Floating Header Card in Blue Theme */}
+      <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full border border-blue-100 shadow-lg px-3 py-2 flex flex-wrap lg:flex-nowrap items-center justify-between gap-2.5">
         
-        {/* 1. Branding: Pink Map Pin + Title */}
+        {/* 1. Branding: Blue Map Pin + Title */}
         <div className="flex items-center space-x-2 shrink-0 pl-1 pr-1">
-          <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
-            <MapPin className="w-4 h-4 fill-rose-500 text-rose-500" />
+          <div className="w-6.5 h-6.5 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
+            <MapPin className="w-4 h-4 fill-blue-600 text-blue-600" />
           </div>
           <h1 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight whitespace-nowrap">
             Kolkata Startup Map
@@ -37,7 +37,7 @@ export default function Navbar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search startups, sectors, founders..."
-            className="w-full pl-4 pr-7 py-1.5 rounded-full text-xs border border-slate-200 bg-slate-50/80 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:bg-white transition"
+            className="w-full pl-4 pr-7 py-1.5 rounded-full text-xs border border-slate-200 bg-blue-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition"
           />
           {searchQuery && (
             <button
@@ -87,7 +87,7 @@ export default function Navbar({
               onClick={() => setActiveView('map')}
               className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activeView === 'map'
-                  ? 'bg-slate-900 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -98,7 +98,7 @@ export default function Navbar({
               onClick={() => setActiveView('grid')}
               className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 activeView === 'grid'
-                  ? 'bg-slate-900 text-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -111,9 +111,9 @@ export default function Navbar({
             href={GOOGLE_FORM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold text-orange-600 bg-white border border-orange-500/80 hover:bg-orange-50 transition cursor-pointer"
+            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-bold text-blue-600 bg-white border border-blue-500/80 hover:bg-blue-50 transition cursor-pointer"
           >
-            <Zap className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+            <Zap className="w-3.5 h-3.5 fill-blue-600 text-blue-600" />
             <span>Boost</span>
           </a>
 
@@ -122,7 +122,7 @@ export default function Navbar({
             href={GOOGLE_FORM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-bold text-white bg-[#ff5722] hover:bg-[#f4511e] transition shadow-xs cursor-pointer"
+            className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-sm cursor-pointer"
           >
             <span>Submit</span>
           </a>

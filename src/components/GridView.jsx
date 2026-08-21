@@ -6,7 +6,7 @@ export default function GridView({ startups, onSelectStartup }) {
   if (!startups || startups.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-12 text-center border border-slate-200 shadow-xs max-w-xl mx-auto my-12">
-        <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mx-auto mb-3">
           <Building2 className="w-6 h-6" />
         </div>
         <h3 className="text-base font-bold text-slate-900 mb-1">No Startups Found</h3>
@@ -28,20 +28,24 @@ export default function GridView({ startups, onSelectStartup }) {
         return (
           <div
             key={startup.id}
-            className="group bg-white rounded-2xl p-5 border border-slate-200/90 hover:border-indigo-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between"
+            className="group bg-white rounded-2xl p-5 border border-slate-200/90 hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between"
           >
             <div>
               {/* Header with Circle initial & Title */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex items-start space-x-3">
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shrink-0 shadow-xs group-hover:scale-105 transition-transform"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shrink-0 shadow-xs group-hover:scale-105 transition-transform overflow-hidden"
                     style={{ backgroundColor: sectorColor.hex }}
                   >
-                    {startup.colorSeed || startup.name.charAt(0)}
+                    {startup.logoUrl && startup.logoUrl.trim() !== '' ? (
+                      <img src={startup.logoUrl} alt={startup.name} className="w-full h-full object-contain p-1 bg-white rounded-xl" />
+                    ) : (
+                      startup.colorSeed || startup.name.charAt(0)
+                    )}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-base group-hover:text-indigo-600 transition-colors line-clamp-1">
+                    <h3 className="font-bold text-slate-900 text-base group-hover:text-blue-600 transition-colors line-clamp-1">
                       {startup.name}
                     </h3>
                     <div className="flex items-center space-x-1 text-xs text-slate-500 font-medium">
@@ -75,7 +79,7 @@ export default function GridView({ startups, onSelectStartup }) {
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
               <button
                 onClick={() => onSelectStartup && onSelectStartup(startup)}
-                className="inline-flex items-center space-x-1 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition cursor-pointer"
+                className="inline-flex items-center space-x-1 text-xs font-semibold text-slate-600 hover:text-blue-600 transition cursor-pointer"
               >
                 <span>Focus on Map</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -86,7 +90,7 @@ export default function GridView({ startups, onSelectStartup }) {
                   href={startup.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 transition"
+                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 transition"
                 >
                   <span>Website</span>
                   <ExternalLink className="w-3.5 h-3.5" />
