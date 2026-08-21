@@ -39,23 +39,23 @@ export default function CustomSelect({
   }, [isOpen]);
 
   return (
-    <div className="relative w-full" ref={containerRef}>
+    <div className="relative w-full sm:w-auto" ref={containerRef}>
       
-      {/* Trigger Button */}
+      {/* Pill Trigger Button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border transition-all duration-150 cursor-pointer shadow-2xs ${
+        className={`w-full sm:w-auto flex items-center justify-between gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 cursor-pointer whitespace-nowrap ${
           isFiltered
-            ? 'bg-indigo-50/80 border-indigo-300 text-indigo-900 font-semibold ring-1 ring-indigo-200'
+            ? 'bg-slate-900 border-slate-900 text-white font-semibold shadow-xs'
             : isOpen
-            ? 'bg-white border-indigo-500 text-slate-900 ring-2 ring-indigo-500/20 shadow-xs'
-            : 'bg-white border-slate-200/90 hover:border-slate-300 text-slate-700 hover:bg-slate-50/80'
+            ? 'bg-white border-slate-400 text-slate-900 ring-2 ring-slate-900/10'
+            : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50'
         }`}
       >
-        <div className="flex items-center gap-2 min-w-0 truncate">
+        <div className="flex items-center gap-1.5 min-w-0 truncate">
           {Icon && (
-            <Icon className={`w-3.5 h-3.5 shrink-0 ${isFiltered ? 'text-indigo-600' : 'text-slate-400'}`} />
+            <Icon className={`w-3.5 h-3.5 shrink-0 ${isFiltered ? 'text-white' : 'text-slate-400'}`} />
           )}
           <span className="truncate">
             {selectedOption ? selectedOption.label : placeholder}
@@ -63,15 +63,15 @@ export default function CustomSelect({
         </div>
 
         <ChevronDown
-          className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-            isFiltered ? 'text-indigo-600' : 'text-slate-400'
-          } ${isOpen ? 'rotate-180 text-indigo-600' : ''}`}
+          className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${
+            isFiltered ? 'text-white' : 'text-slate-400'
+          } ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {/* Popover Dropdown */}
       {isOpen && (
-        <div className="absolute top-full mt-1.5 left-0 right-0 min-w-[180px] z-[9999] bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1.5 max-h-64 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute top-full mt-1.5 left-0 sm:left-auto sm:right-0 min-w-[180px] z-[9999] bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1.5 max-h-64 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-150">
           {options.map((option) => {
             const isSelected = option.id === value;
             return (
@@ -82,10 +82,10 @@ export default function CustomSelect({
                   onChange(option.id);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-2 text-xs sm:text-sm font-medium transition cursor-pointer ${
+                className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-medium transition cursor-pointer ${
                   isSelected
-                    ? 'bg-indigo-600 text-white font-semibold'
-                    : 'text-slate-700 hover:bg-indigo-50/80 hover:text-indigo-700'
+                    ? 'bg-slate-900 text-white font-semibold'
+                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
                 <span className="truncate">{option.label}</span>

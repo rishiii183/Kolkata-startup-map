@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import Header from './components/Header';
-import FilterBar from './components/FilterBar';
+import Navbar from './components/Navbar';
 import StatsBar from './components/StatsBar';
 import MapView from './components/MapView';
 import GridView from './components/GridView';
@@ -58,50 +57,42 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="relative w-screen h-screen overflow-hidden bg-slate-50 text-slate-900 flex flex-col">
       
-      {/* Top Header */}
-      <Header />
+      {/* Unified Floating Top Navbar Overlay */}
+      <div className="absolute top-2 left-0 right-0 z-50 px-2 sm:px-4 pointer-events-auto">
+        <Navbar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filters={filters}
+          setFilters={setFilters}
+          activeView={activeView}
+          setActiveView={setActiveView}
+        />
+      </div>
 
-      {/* Filter controls */}
-      <FilterBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        filters={filters}
-        setFilters={setFilters}
-        activeView={activeView}
-        setActiveView={setActiveView}
-        totalResults={filteredStartups.length}
-      />
-
-      {/* Status Bar */}
-      <StatsBar
-        currentCount={filteredStartups.length}
-        totalCount={startupsData.length}
-      />
-
-      {/* Main Content Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Main Content Area */}
+      <main className="relative w-full h-full flex-1 overflow-hidden">
         {activeView === 'map' ? (
           <MapView
             startups={filteredStartups}
             onSelectStartup={handleSelectStartup}
           />
         ) : (
-          <GridView
-            startups={filteredStartups}
-            onSelectStartup={handleSelectStartup}
-          />
+          <div className="w-full h-full overflow-y-auto pt-24 px-4 sm:px-8 pb-16 max-w-7xl mx-auto">
+            <GridView
+              startups={filteredStartups}
+              onSelectStartup={handleSelectStartup}
+            />
+          </div>
         )}
-      </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>&copy; {new Date().getFullYear()} Kolkata Startup Map — Built for Kolkata's Startup Community.</span>
-          <span className="text-slate-400">Map tiles &copy; OpenStreetMap contributors & CARTO</span>
-        </div>
-      </footer>
+        {/* Floating Bottom Left Overlay */}
+        <StatsBar
+          currentCount={filteredStartups.length}
+          totalCount={startupsData.length}
+        />
+      </main>
 
     </div>
   );

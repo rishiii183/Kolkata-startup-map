@@ -16,7 +16,7 @@ function MapRecenter({ startups }) {
     if (startups && startups.length > 0) {
       const bounds = L.latLngBounds(startups.map(s => [s.lat, s.lng]));
       if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+        map.fitBounds(bounds, { padding: [80, 80], maxZoom: 14 });
       }
     } else {
       map.setView(KOLKATA_CENTER, DEFAULT_ZOOM);
@@ -134,7 +134,7 @@ function createCustomMarkerIcon(startup) {
 
 export default function MapView({ startups, onSelectStartup }) {
   return (
-    <div className="relative z-0 w-full h-[calc(100vh-12rem)] min-h-[500px] rounded-2xl overflow-hidden shadow-xs border border-slate-200">
+    <div className="relative z-0 w-full h-full min-h-screen">
       <MapContainer
         center={KOLKATA_CENTER}
         zoom={DEFAULT_ZOOM}
