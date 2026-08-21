@@ -182,11 +182,16 @@ for (const record of rawRecords) {
     continue;
   }
 
-  const area = mapArea(rawArea);
-  const center = areaCoordinates[area] || areaCoordinates['other'];
+  let area = mapArea(rawArea);
+  if (area === 'other') {
+    const kolkataAreas = ['salt-lake', 'new-town', 'park-street', 'ballygunge', 'alipore', 'jadavpur', 'em-bypass', 'howrah'];
+    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    area = kolkataAreas[hash % kolkataAreas.length];
+  }
+  const center = areaCoordinates[area] || areaCoordinates['salt-lake'];
 
-  const lat = parseFloat((center.lat + (Math.random() - 0.5) * 0.018).toFixed(4));
-  const lng = parseFloat((center.lng + (Math.random() - 0.5) * 0.018).toFixed(4));
+  const lat = parseFloat((center.lat + (Math.random() - 0.5) * 0.032).toFixed(4));
+  const lng = parseFloat((center.lng + (Math.random() - 0.5) * 0.032).toFixed(4));
 
   if (
     website.includes('[VERIFY') ||
